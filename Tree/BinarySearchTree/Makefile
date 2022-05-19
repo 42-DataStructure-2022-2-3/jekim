@@ -7,7 +7,7 @@ RM				= rm -rf
 OBJDIR			= ./obj/
 SRCDIR			= ./srcs/
 DEBUG			= -g3 -fsanitize=address
-SRCS			= main.c binTree.c
+SRCS			= main.c binSearchTree.c
 
 SRCS_OBJS_FILE	= $(SRCS:.c=.o)
 SRCS_OBJS		= $(addprefix $(OBJDIR), $(SRCS_OBJS_FILE))
@@ -18,10 +18,10 @@ objd_build:
 				mkdir -p $(OBJDIR)
 
 $(OBJDIR)%.o : $(SRCDIR)%.c
-				$(CC) $(CFLAGS) $(INCLUDE) $< -c -o $@
+				$(CC) $(CFLAGS) $(INCLUDE) $< -c -o $@ -g
 
 $(NAME):		$(SRCS_OBJS)
-				$(CC) $(CFLAGS) $(INCLUDE) $(SRCS_OBJS) -o $(NAME)
+				$(CC) $(CFLAGS) $(INCLUDE) $(SRCS_OBJS) -o $(NAME) -g
 				@echo "\033[0;92m* $(NAME) was created *\033[0m"
 
 clean:

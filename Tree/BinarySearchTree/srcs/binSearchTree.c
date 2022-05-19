@@ -29,42 +29,15 @@ BSTNode* getRootNodeBST(BinSearchTree* pBSTree) {
     return pBSTree->pRootNode;
 };
 
-BSTNode* insert_recursive(BSTNode* pParentNode, BSTNode element) {
-    if (pParentNode->data == element.data) return NULL;
-    if (!pParentNode) {
-        pParentNode = copyBSTNode(element);
-        return pParentNode;
-    } else if (pParentNode->data < element.data) {
-        insert(pParentNode->pRightChild, element);
-    } else {
-        insert(pParentNode->pLeftChild, element);
-    }
-};
 
 BSTNode* search_recursive(BSTNode* pParentNode, int data) {
     if (!pParentNode || pParentNode->data == data) {
         return pParentNode;
     } else if (pParentNode->data < data) {
-        search_recursive(pParentNode->pRightChild, data);
+        return (search_recursive(pParentNode->pRightChild, data));
     } else {
-        search_recursive(pParentNode->pLeftChild, data);
+        return (search_recursive(pParentNode->pLeftChild, data));
     }
-};
-
-BSTNode* insert_loop(BinSearchTree* pBinSearchTree, BSTNode element) {
-    BSTNode *ret = pBinSearchTree->pRootNode;
-    while (ret != NULL) {
-        if (!ret) {
-            break ;
-        } else if (ret->data < element.data) {
-            ret = ret->pRightChild;
-        } else if (ret->data > element.data) {
-            ret = ret->pLeftChild;
-        } else {
-            return NULL;
-        }
-    }
-    ret = copyBSTNode(element);
 };
 
 BSTNode* search_loop(BinSearchTree* pBinSearchTree, int data) {
@@ -81,72 +54,6 @@ BSTNode* search_loop(BinSearchTree* pBinSearchTree, int data) {
     return ret;
 };
 
-
-bool deleteBSTNode(BinSearchTree* pBinSearchTree, int data) {
-
-    BSTNode *del_Node = search_loop(pBinSearchTree, data);
-
-    if (!del_Node) return false;
-
-    if (!del_Node->pLeftChild && !del_Node->pRightChild)
-    {   
-        free(del_Node);
-        del_Node = NULL;
-    }
-    if (!del_Node->pLeftChild || !del_Node->pRightChild)
-    {
-        BSTNode *tmp = del_Node;
-        del_Node = del_Node->pLeftChild ? del_Node->pLeftChild : del_Node->pRightChild;
-        free(tmp);
-    }
-    if (del_Node->pLeftChild && del_Node->pRightChild)
-    {
-        BSTNode *del = del_Node;
-        BSTNode *tmp = NULL;
-        BSTNode *del_Node_pLeftChild_Max = del_Node->pLeftChild;
-        BSTNode *del_Node_pRightChild_Min = del_Node->pRightChild;
-
-        while (true)
-        {
-            if (del_Node_pLeftChild_Max->pRightChild == NULL)
-                break ;
-            else
-            {
-                tmp = del_Node_pLeftChild_Max;
-                del_Node_pLeftChild_Max = del_Node_pLeftChild_Max->pRightChild;
-            }
-        }
-        del_Node = del_Node_pLeftChild_Max;
-        if (del_Node_pLeftChild_Max->pLeftChild)
-            tmp->pRightChild = del_Node_pLeftChild_Max->pLeftChild;
-        else
-            tmp->pRightChild = NULL;
-        del_Node->pLeftChild = del->pLeftChild;
-        del_Node->pRightChild = del->pRightChild;
-        free(del);
-    }
-    return true;
-};
-
-BSTNode *find_max_in_left_subtree(BSTNode *del_Node)
-{
-    BSTNode *ret = del_Node->pLeftChild;
-    
-    while (ret->pRightChild)
-        ret = ret->pRightChild;
-    return (ret);
-}
-
-BSTNode *find_min_in_right_subtree(BSTNode *del_Node)
-{
-    BSTNode *ret = del_Node->pRightChild;
-    
-    while (ret->pLeftChild)
-        ret = ret->pLeftChild;
-    return (ret);
-
-}
-
 void printTreeData_InOrder(BSTNode* rootNode)
 {
     if (rootNode->pLeftChild)
@@ -155,3 +62,110 @@ void printTreeData_InOrder(BSTNode* rootNode)
     if (rootNode->pRightChild)
         printTreeData_InOrder(rootNode->pRightChild);
 }
+
+bool    insert_loop(BinSearchTree* pBinSearchTree, BSTNode element) {
+   BSTNode  *parent;
+   BSTNode *node = pBinSearchTree->pRootNode;
+   while (node)
+   {
+        if (node->data == element.data) {
+            printf("already exist!");
+            return false; }
+        else if (node->data > element.data)
+        {
+            parent = node;
+            node = node->pLeftChild;
+        }
+        else if (node->data < element.data)
+        {
+            parent = node;
+            node = node->pRightChild;
+        }
+   }
+    if (parent->data > element.data)
+        parent->pLeftChild = copyBSTNode(element);
+    if (parent->data < element.data)
+        parent->pRightChild = copyBSTNode(element);
+    return true;
+};
+
+// insert_rec(pBinSearchTree->pRootNode, element, 0);
+bool    insert_recursive(BSTNode* targetNode, BSTNode element, BSTNode *target_parent) {
+
+    if (targetNode->data == element.data) return false;
+    if (targetNode->data > element.data) return insert_recursive(targetNode->pLeftChild, element ,targetNode);
+    if (targetNode->data < element.data) return insert_recursive(targetNode->pRightChild, element, targetNode);
+    if (!targetNode) {
+        if (target_parent->data > element.data) target_parent->pLeftChild = copyBSTNode(element);
+        else target_parent->pRightChild = copyBSTNode(element);
+    }
+    return true;
+}
+
+bool deleteBSTNode(BinSearchTree* pBinSearchTree, int data) {
+    BSTNode *del_Node = search_loop(pBinSearchTree, data);
+    if (!del_Node) return false;
+    BSTNode *parentNode = search_parentNode(pBinSearchTree, data);
+    if (!del_Node->pLeftChild && !del_Node->pRightChild)
+    {
+        if (parentNode->pLeftChild == del_Node) parentNode->pLeftChild = NULL;
+        if (parentNode->pRightChild == del_Node) parentNode->pRightChild = NULL;
+        free(del_Node);
+        del_Node = NULL;
+    }
+    else if (!del_Node->pLeftChild || !del_Node->pRightChild)
+    {
+        BSTNode *delchild = del_Node->pLeftChild ? del_Node->pLeftChild : del_Node->pRightChild;
+        if (parentNode->pLeftChild == del_Node) parentNode->pLeftChild = delchild;
+        if (parentNode->pRightChild == del_Node) parentNode->pRightChild = delchild;
+        free(del_Node);
+        del_Node = NULL;
+    }
+    else if (del_Node->pLeftChild && del_Node->pRightChild)
+    {
+        BSTNode *del = del_Node;
+        BSTNode *del_Node_pLeftChild_Max = del_Node->pLeftChild;
+        BSTNode *tmp = search_parentNode(pBinSearchTree, del_Node->data); // del node parent 
+        //BSTNode *del_Node_pRightChild_Min = del_Node->pRightChild;
+        while (true)
+        {
+            if (del_Node_pLeftChild_Max->pRightChild == NULL)
+                break ;
+            else
+                del_Node_pLeftChild_Max = del_Node_pLeftChild_Max->pRightChild;
+        }
+        parentNode = search_parentNode(pBinSearchTree, del_Node_pLeftChild_Max->data); // successor parent
+        del_Node = del_Node_pLeftChild_Max;
+        if (del_Node_pLeftChild_Max->pLeftChild)
+            parentNode->pRightChild = del_Node_pLeftChild_Max->pLeftChild;
+        else
+            parentNode->pRightChild = NULL;
+        del_Node->pLeftChild = del->pLeftChild;
+        del_Node->pRightChild = del->pRightChild;
+        if (del == pBinSearchTree->pRootNode)
+            pBinSearchTree->pRootNode = del_Node;
+        if (tmp->pLeftChild == del)
+            tmp->pLeftChild = del_Node;
+        else
+            tmp->pRightChild = del_Node;
+        free(del);
+    }
+    return true;
+};
+
+BSTNode* search_parentNode(BinSearchTree* pBinSearchTree, int data) {
+    BSTNode *parentNode;
+    BSTNode *ret = pBinSearchTree->pRootNode;
+    while (ret != NULL) {
+        if (ret->data == data) {
+            break ;
+        } else if (ret->data < data) {
+            parentNode = ret;
+            ret = ret->pRightChild;
+        } else {
+            parentNode = ret;
+            ret = ret->pLeftChild;
+        }
+    }
+    return parentNode;
+};

@@ -19,17 +19,15 @@ typedef struct BinSearchTreeType {
 
 BinSearchTree* makeBinSearchTree(BSTNode rootNode);
 BSTNode* getRootNodeBST(BinSearchTree* pBinSearchTree);
-BSTNode* insert_recursive(BSTNode* pParentNode, BSTNode element);
 BSTNode* search_recursive(BSTNode* pParentNode, int data);
-BSTNode* insert_loop(BinSearchTree* pBinSearchTree, BSTNode element);
 BSTNode* search_loop(BinSearchTree* pBinSearchTree, int data);
-
-BSTNode *find_max_in_left_subtree(BSTNode *del_Node);
-BSTNode *find_min_in_right_subtree(BSTNode *del_Node);
-
-
+bool    insert_recursive(BSTNode* targetNode, BSTNode element, BSTNode *target_parent);
+bool    insert_loop(BinSearchTree* pBinSearchTree, BSTNode element);
+BSTNode* search_loop(BinSearchTree* pBinSearchTree, int data);
+BSTNode* search_parentNode(BinSearchTree* pBinSearchTree, int data);
 bool deleteBSTNode(BinSearchTree* pBinSearchTree, int data);
 BSTNode* copyBSTNode(BSTNode element);
 BSTNode* makeBSTNode(int inputData);
+void printTreeData_InOrder(BSTNode* rootNode);
 
 #endif // _BIN_SEARCH_TREE_
