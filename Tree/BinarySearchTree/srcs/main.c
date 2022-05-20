@@ -11,25 +11,28 @@ void testfield(void) {
     insert_loop(tree, *element);
     element->data = 40;
     insert_loop(tree, *element);
-     element->data = 10;
+    element->data = 10;
     insert_loop(tree, *element);
-     element->data = 24;
+    element->data = 24;
     insert_loop(tree, *element);
-     element->data = 34;
+    element->data = 34;
     insert_loop(tree, *element);
-     element->data = 46;
+    element->data = 46;
     insert_loop(tree, *element);
-     element->data = 6;
+    element->data = 6;
     insert_loop(tree, *element);
-     element->data = 14;
+    element->data = 14;
     insert_loop(tree, *element);
-      element->data = 22;
+    element->data = 22;
     insert_loop(tree, *element);
 
-    deleteBSTNode(tree, 24);
-    deleteBSTNode(tree, 30);
+    // deleteBSTNode(tree, 22);
+    // deleteBSTNode(tree, 24);
+    deleteBSTNode(tree, 40);
+
 
     printTreeData_InOrder(tree->pRootNode);
+    system("leaks binSearchTree");
 }
 
 int main(void) {

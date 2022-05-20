@@ -1,5 +1,6 @@
 #include "../includes/binSearchTree.h"
 
+// 이진탐색트리 생성시 루트노드가 있는 것을 전제함 
 BinSearchTree* makeBinSearchTree(BSTNode rootNode) {
     BinSearchTree* ret = (BinSearchTree *)calloc(sizeof(BinSearchTree), 1);
     if (!ret) return NULL;
@@ -28,6 +29,10 @@ BSTNode* makeBSTNode(int inputData) {
 BSTNode* getRootNodeBST(BinSearchTree* pBSTree) {
     return pBSTree->pRootNode;
 };
+
+// 이진탐색이란 ?
+// 데이터의 정 중앙에서 탐색을 시작해서
+// 탐색 대상을 반으로 줄여나가는
 
 
 BSTNode* search_recursive(BSTNode* pParentNode, int data) {
@@ -70,7 +75,8 @@ bool    insert_loop(BinSearchTree* pBinSearchTree, BSTNode element) {
    {
         if (node->data == element.data) {
             printf("already exist!");
-            return false; }
+            return false;
+        }
         else if (node->data > element.data)
         {
             parent = node;
@@ -91,21 +97,22 @@ bool    insert_loop(BinSearchTree* pBinSearchTree, BSTNode element) {
 
 // insert_rec(pBinSearchTree->pRootNode, element, 0);
 bool    insert_recursive(BSTNode* targetNode, BSTNode element, BSTNode *target_parent) {
-
-    if (targetNode->data == element.data) return false;
-    if (targetNode->data > element.data) return insert_recursive(targetNode->pLeftChild, element ,targetNode);
-    if (targetNode->data < element.data) return insert_recursive(targetNode->pRightChild, element, targetNode);
     if (!targetNode) {
         if (target_parent->data > element.data) target_parent->pLeftChild = copyBSTNode(element);
         else target_parent->pRightChild = copyBSTNode(element);
+        return true;
     }
+    if (targetNode->data == element.data) return false;
+    if (targetNode->data > element.data) return insert_recursive(targetNode->pLeftChild, element ,targetNode);
+    if (targetNode->data < element.data) return insert_recursive(targetNode->pRightChild, element, targetNode);
     return true;
 }
 
 bool deleteBSTNode(BinSearchTree* pBinSearchTree, int data) {
     BSTNode *del_Node = search_loop(pBinSearchTree, data);
-    if (!del_Node) return false;
-    BSTNode *parentNode = search_parentNode(pBinSearchTree, data);
+    if (!del_Node) return false; // 이진탐색트리에 지우고자 하는 값이 없음
+    BSTNode *parentNode = search_parentNode(pBinSearchTree, data); // 지우고자 하는 부모노드를 탐색
+    // 지우고자 하는 노드가 리프인 경우
     if (!del_Node->pLeftChild && !del_Node->pRightChild)
     {
         if (parentNode->pLeftChild == del_Node) parentNode->pLeftChild = NULL;
@@ -113,6 +120,7 @@ bool deleteBSTNode(BinSearchTree* pBinSearchTree, int data) {
         free(del_Node);
         del_Node = NULL;
     }
+    // 지우고자 하는 노드의 자식이 1개인 경우
     else if (!del_Node->pLeftChild || !del_Node->pRightChild)
     {
         BSTNode *delchild = del_Node->pLeftChild ? del_Node->pLeftChild : del_Node->pRightChild;
@@ -121,12 +129,15 @@ bool deleteBSTNode(BinSearchTree* pBinSearchTree, int data) {
         free(del_Node);
         del_Node = NULL;
     }
+    // 지우고자 하는 노드의 자식이 두 개 모두 있는 경우
     else if (del_Node->pLeftChild && del_Node->pRightChild)
     {
-        BSTNode *del = del_Node;
+
+        BSTNode *del = del_Node; // 지우려는 노드를 임시 저장
+        // 지우고자 하는 노드를 지우고 난 뒤
+
         BSTNode *del_Node_pLeftChild_Max = del_Node->pLeftChild;
-        BSTNode *tmp = search_parentNode(pBinSearchTree, del_Node->data); // del node parent 
-        //BSTNode *del_Node_pRightChild_Min = del_Node->pRightChild;
+        BSTNode *tmp = search_parentNode(pBinSearchTree, del_Node->data); // 지우고자하는 노드의 부모노드
         while (true)
         {
             if (del_Node_pLeftChild_Max->pRightChild == NULL)
@@ -144,17 +155,19 @@ bool deleteBSTNode(BinSearchTree* pBinSearchTree, int data) {
         del_Node->pRightChild = del->pRightChild;
         if (del == pBinSearchTree->pRootNode)
             pBinSearchTree->pRootNode = del_Node;
-        if (tmp->pLeftChild == del)
-            tmp->pLeftChild = del_Node;
-        else
-            tmp->pRightChild = del_Node;
+        else {
+            if (tmp->pLeftChild == del)
+                tmp->pLeftChild = del_Node;
+            else
+                tmp->pRightChild = del_Node;
+        };
         free(del);
     }
     return true;
 };
 
 BSTNode* search_parentNode(BinSearchTree* pBinSearchTree, int data) {
-    BSTNode *parentNode;
+    BSTNode *parentNode = NULL;
     BSTNode *ret = pBinSearchTree->pRootNode;
     while (ret != NULL) {
         if (ret->data == data) {
