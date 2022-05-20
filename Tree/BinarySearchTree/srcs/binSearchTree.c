@@ -1,6 +1,6 @@
 #include "../includes/binSearchTree.h"
 
-// 이진탐색트리 생성시 루트노드가 있는 것을 전제함 
+// 이진탐색트리 생성시 루트노드가 있는 것을 전제함
 BinSearchTree* makeBinSearchTree(BSTNode rootNode) {
     BinSearchTree* ret = (BinSearchTree *)calloc(sizeof(BinSearchTree), 1);
     if (!ret) return NULL;
@@ -132,35 +132,30 @@ bool deleteBSTNode(BinSearchTree* pBinSearchTree, int data) {
     // 지우고자 하는 노드의 자식이 두 개 모두 있는 경우
     else if (del_Node->pLeftChild && del_Node->pRightChild)
     {
-
-        BSTNode *del = del_Node; // 지우려는 노드를 임시 저장
-        // 지우고자 하는 노드를 지우고 난 뒤
-
-        BSTNode *del_Node_pLeftChild_Max = del_Node->pLeftChild;
-        BSTNode *tmp = search_parentNode(pBinSearchTree, del_Node->data); // 지우고자하는 노드의 부모노드
+        BSTNode *del = del_Node;
+        BSTNode *successor = del_Node->pLeftChild;
         while (true)
         {
-            if (del_Node_pLeftChild_Max->pRightChild == NULL)
+            if (!successor->pRightChild)
                 break ;
-            else
-                del_Node_pLeftChild_Max = del_Node_pLeftChild_Max->pRightChild;
+            successor = successor->pRightChild;
         }
-        parentNode = search_parentNode(pBinSearchTree, del_Node_pLeftChild_Max->data); // successor parent
-        del_Node = del_Node_pLeftChild_Max;
-        if (del_Node_pLeftChild_Max->pLeftChild)
-            parentNode->pRightChild = del_Node_pLeftChild_Max->pLeftChild;
+        BSTNode *successor_parrent = search_parentNode(pBinSearchTree, successor->data);
+        if (successor->pLeftChild)
+            successor_parrent->pLeftChild = successor->pLeftChild;
         else
-            parentNode->pRightChild = NULL;
-        del_Node->pLeftChild = del->pLeftChild;
-        del_Node->pRightChild = del->pRightChild;
-        if (del == pBinSearchTree->pRootNode)
-            pBinSearchTree->pRootNode = del_Node;
-        else {
-            if (tmp->pLeftChild == del)
-                tmp->pLeftChild = del_Node;
-            else
-                tmp->pRightChild = del_Node;
-        };
+            successor_parrent->pLeftChild = NULL;
+        successor->pLeftChild = del->pLeftChild;
+        successor->pRightChild = del->pRightChild;
+        if (parentNode != NULL)
+        {
+        if (parentNode->pLeftChild == del)
+            parentNode->pLeftChild = successor;
+        else
+            parentNode->pRightChild = successor;
+        }
+        else
+            pBinSearchTree->pRootNode = successor;
         free(del);
     }
     return true;

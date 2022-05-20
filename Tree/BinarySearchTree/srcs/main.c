@@ -26,13 +26,15 @@ void testfield(void) {
     element->data = 22;
     insert_loop(tree, *element);
 
-    // deleteBSTNode(tree, 22);
-    // deleteBSTNode(tree, 24);
-    deleteBSTNode(tree, 40);
+    deleteBSTNode(tree, 22);
+    deleteBSTNode(tree, 24);
+    deleteBSTNode(tree, 10);
+    deleteBSTNode(tree, 30);
+
 
 
     printTreeData_InOrder(tree->pRootNode);
-    system("leaks binSearchTree");
+    //system("leaks binSearchTree");
 }
 
 int main(void) {
